@@ -2,15 +2,13 @@ import Combine
 import Experiments
 import FirebaseRemoteConfig
 
-public class RemoteConfigKeeper {
+public class FirebaseRemoteConfigKeeper: RemoteConfigKeeper {
 
     private enum Constant {
         static let expirationDuration: TimeInterval = 12 * 60 * 60
     }
 
-    public static let shared = RemoteConfigKeeper()
-
-    private init() {}
+    public init() { }
 
     // MARK: - Properties
 
@@ -32,11 +30,18 @@ public class RemoteConfigKeeper {
         return subject.eraseToAnyPublisher()
     }
 
-    public func value<T: Experiments.RemoteConfigValue>(for key: Experiments.RemoteKey) -> T? {
-        if let type = key.valueType as? RemoteConfigStringValue.Type {
-            return string(for: key).flatMap { type.init(rawValue: $0) } as? T
-        } else if let type = key.valueType as? RemoteConfigBoolValue.Type {
+    public func value<T: Experiments.RemoteValue>(for key: Experiments.RemoteKey) -> T? {
+        if let type = key.valueType as? StringRemoteValue.Type {
+            return string(for: key).flatMap { type.init(name: $0) } as? T
+        } else if let type = key.valueType as? BoolRemoteValue.Type {
             return bool(for: key).flatMap { type.init(booleanLiteral: $0) } as? T
+        }
+        return nil
+    }
+
+    public func stringValueRepresentation(for key: Experiments.RemoteKey) -> String? {
+        if let value = string(for: key) {
+            return value.isEmpty ? nil : value
         }
         return nil
     }

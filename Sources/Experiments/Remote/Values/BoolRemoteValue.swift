@@ -2,21 +2,21 @@
 ///
 /// For example:
 ///
-///     enum FeatureEnabled: Int, RemoteConfigBoolValue {
+///     enum FeatureEnabled: Int, BoolRemoteValue {
 ///         case enabled
 ///         case disabled
 ///     }
 ///
-/// By default, `.disabled` is used as default value, but it can be overriden like this
+/// By default, `.disabled` is used as default value, but it can be overridden like this
 ///
-///     enum FeatureEnabled: Int, RemoteConfigBoolValue {
+///     enum FeatureEnabled: Int, BoolRemoteValue {
 ///         case enabled
 ///         case disabled
 ///
 ///         static let `default`: Self = .enabled
 ///     }
 ///
-public protocol RemoteConfigBoolValue: RemoteConfigValue {
+public protocol BoolRemoteValue: RemoteValue {
     static var enabled: Self { get }
     static var disabled: Self { get }
 
@@ -25,7 +25,7 @@ public protocol RemoteConfigBoolValue: RemoteConfigValue {
     init(booleanLiteral value: Bool)
 }
 
-public extension RemoteConfigBoolValue {
+public extension BoolRemoteValue {
     init(booleanLiteral value: Bool) {
         self = value ? .enabled : .disabled
     }
