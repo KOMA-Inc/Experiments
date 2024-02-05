@@ -97,6 +97,12 @@ open class RemoteConfigService {
         keys.forEach { key in
             getRemoteValue(for: key, with: key.valueType)
         }
+        if !missingKeys.isEmpty {
+            trackKeysNotFound(missingKeys)
+        }
+        if !incorrectValues.isEmpty {
+            trackIncorrectValues(incorrectValues)
+        }
     }
 
     open func trackKeyNotFound(_ key: RemoteKey) {
@@ -146,7 +152,7 @@ public extension RemoteConfigService {
         getRemoteValue(for: key, with: key.valueType) as! T
     }
 
-    final func remoteValueRelay<T: RemoteValue>(for key: RemoteKey) -> AnyPublisher<T, Never> {
+    final func remoteValuePublisher<T: RemoteValue>(for key: RemoteKey) -> AnyPublisher<T, Never> {
         getRemoteValuePublisher(for: key, with: key.valueType as! T.Type)
             .compactMap { $0 as? T }
             .share()
