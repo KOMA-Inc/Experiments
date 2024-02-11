@@ -1,25 +1,52 @@
-@attached(
-    member,
-    names: named(baseline), named(variant), named(init(name:)), named(init(baseline:variant:)), named(enabled), named(disabled), named(rawValue)
-)
-@attached(
-    extension,
-    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue, BoolRemoteValue,
-    names: named(`default`), named(allCases), named(name)
-)
-public macro RemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "RemoteValueMacro")
+// MARK: - StringRemoteValue
 
-@attached(memberAttribute)
+@attached(
+    extension,
+    conformances: CaseIterable, StringRemoteValue
+)
+public macro StringRemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "StringRemoteValueMacro")
+
+// MARK: - BoolRemoteValue
+
 @attached(
     member,
-    names: named(baseline), named(variant), named(init(name:)), named(init(baseline:variant:))
+    names: named(enabled), named(disabled), named(rawValue), named(init(booleanLiteral:))
 )
 @attached(
     extension,
-    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue,
-    names: named(`default`), named(allCases), named(name)
+    conformances: CaseIterable, BoolRemoteValue,
+    names: named(`default`)
 )
-public macro BaselineRemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "BaselineRemoteValueMacro")
+public macro BoolRemoteValue(enabledByDefault: Bool = false) = #externalMacro(module: "ExperimentsMacros", type: "BoolRemoteValueMacro")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//@attached(memberAttribute)
+//@attached(
+//    member,
+//    names: named(baseline), named(variant), named(init(name:)), named(init(baseline:variant:))
+//)
+//@attached(
+//    extension,
+//    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue,
+//    names: named(`default`), named(allCases), named(name)
+//)
+//public macro BaselineRemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "BaselineRemoteValueMacro")
+
+// MARK: - RemoteValuesNamespace
 
 @attached(memberAttribute)
 public macro RemoteValuesNamespace() = #externalMacro(module: "ExperimentsMacros", type: "RemoteValuesNamespaceMacro")

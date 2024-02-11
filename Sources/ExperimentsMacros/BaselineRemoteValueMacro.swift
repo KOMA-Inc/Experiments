@@ -41,6 +41,11 @@ extension BaselineRemoteValueMacro: MemberMacro {
             context.diagnose(diagnostic)
             return []
         }
+
+        return try expansionForBaselineStringRemoteValue()
+    }
+
+    private static func expansionForBaselineStringRemoteValue() throws -> [DeclSyntax] {
         let baseline = try VariableDeclSyntax("let baseline: Bool")
         let variant = try VariableDeclSyntax("let variant: Variant")
         let optionalInitializer = try InitializerDeclSyntax("init?(name: String)") {

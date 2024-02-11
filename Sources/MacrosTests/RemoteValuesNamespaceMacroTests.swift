@@ -32,20 +32,22 @@ final class RemoteValuesNamespaceMacroTests: XCTestCase {
                 }
             }
 
-            enum TestEnabled {}
+            enum Test {}
+
+            struct AnotherTest { }
         }
         """,
         expandedSource:
         """
 
         enum Value {
-            @RemoteValue
+            @StringRemoteValue
 
             enum SolvingFlow: String {
                 case a
                 case b
             }
-            @BaselineRemoteValue
+            @BaselineStringRemoteValue
 
             struct Paywall {
 
@@ -54,9 +56,12 @@ final class RemoteValuesNamespaceMacroTests: XCTestCase {
                     case b = "b_var"
                 }
             }
-            @RemoteValue
+            @BoolRemoteValue
 
-            enum TestEnabled {}
+            enum Test {}
+            @BaselineBoolRemoteValue
+
+            struct AnotherTest { }
         }
         """,
         macros: testMacros
@@ -73,13 +78,13 @@ final class RemoteValuesNamespaceMacroTests: XCTestCase {
         @RemoteValuesNamespace
         enum Value {
 
-            @RemoteValue
+            @StringRemoteValue
             enum SolvingFlow: String {
                 case a
                 case b
             }
 
-            @BaselineRemoteValue
+            @BaselineStringRemoteValue
             struct Paywall {
 
                 enum Variant: String {
@@ -88,8 +93,11 @@ final class RemoteValuesNamespaceMacroTests: XCTestCase {
                 }
             }
 
-            @RemoteValue
-            enum TestEnabled {}
+            @BoolRemoteValue
+            enum Test {}
+
+            @BaselineBoolRemoteValue
+            struct AnotherTest { }
         }
         """,
         expandedSource:
@@ -97,13 +105,13 @@ final class RemoteValuesNamespaceMacroTests: XCTestCase {
 
         enum Value {
 
-            @RemoteValue
+            @StringRemoteValue
             enum SolvingFlow: String {
                 case a
                 case b
             }
 
-            @BaselineRemoteValue
+            @BaselineStringRemoteValue
             struct Paywall {
 
                 enum Variant: String {
@@ -112,8 +120,11 @@ final class RemoteValuesNamespaceMacroTests: XCTestCase {
                 }
             }
 
-            @RemoteValue
-            enum TestEnabled {}
+            @BoolRemoteValue
+            enum Test {}
+
+            @BaselineBoolRemoteValue
+            struct AnotherTest { }
         }
         """,
         macros: testMacros

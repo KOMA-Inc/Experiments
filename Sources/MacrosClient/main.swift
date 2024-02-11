@@ -1,22 +1,22 @@
 import Experiments
 
-enum RemoteValue {
-
-    case enabled
-
-    case disabled
-
-    var rawValue: Int {
-        switch self {
-        case .enabled:
-            1
-        case .disabled:
-            0
-        }
-    }
+@StringRemoteValue
+enum StringTest: String {
+    case a, b, c
 }
 
-extension RemoteValue: CaseIterable, BoolRemoteValue {
+@BoolRemoteValue
+enum BoolTest1 { }
+
+@BoolRemoteValue
+enum BoolTest2 { 
+    static let `default`: Self = .enabled
 }
 
-enum TestEnabled {}
+@BoolRemoteValue(enabledByDefault: true)
+enum BoolTest3 { }
+
+@BoolRemoteValue(enabledByDefault: true)
+enum BoolTest4 {
+    static let `default`: Self = .enabled
+}

@@ -4,7 +4,8 @@ import SwiftSyntaxMacros
 @main
 struct Plugins: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        RemoteValueMacro.self,
+        StringRemoteValueMacro.self,
+        BoolRemoteValueMacro.self,
         BaselineRemoteValueMacro.self,
         RemoteValuesNamespaceMacro.self
     ]
