@@ -4,7 +4,7 @@
 )
 @attached(
     extension,
-    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue, BoolRemoteValue,
+    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue, BoolRemoteValue, Equatable,
     names: named(`default`), named(allCases), named(name)
 )
 public macro RemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "RemoteValueMacro")

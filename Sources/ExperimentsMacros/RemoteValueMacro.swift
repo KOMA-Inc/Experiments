@@ -110,7 +110,7 @@ extension RemoteValueMacro: ExtensionMacro {
             guard inheritanceClause.inheritedTypes.count == 1 else {
                 return []
             }
-            let ext = try ExtensionDeclSyntax("extension \(type.trimmed): CaseIterable, StringRemoteValue {}")
+            let ext = try ExtensionDeclSyntax("extension \(type.trimmed): CaseIterable, StringRemoteValue, Equatable {}")
             return [ext]
         }
 
@@ -124,7 +124,7 @@ extension RemoteValueMacro: ExtensionMacro {
         }
 
 
-        let ext = try ExtensionDeclSyntax("extension \(type.trimmed): CaseIterable, BoolRemoteValue { }")
+        let ext = try ExtensionDeclSyntax("extension \(type.trimmed): CaseIterable, BoolRemoteValue, Equatable { }")
         return [ext]
     }
 }

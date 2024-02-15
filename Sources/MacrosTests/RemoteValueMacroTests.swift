@@ -33,7 +33,7 @@ final class RemoteValueMacroTests: XCTestCase {
             case f
         }
 
-        extension RemoteValue: CaseIterable, StringRemoteValue {
+        extension RemoteValue: CaseIterable, StringRemoteValue, Equatable {
         }
         """,
         macros: testMacros
@@ -97,7 +97,7 @@ final class RemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: CaseIterable, BoolRemoteValue {
+        extension RemoteValue: CaseIterable, BoolRemoteValue, Equatable {
         }
         """,
         macros: testMacros
