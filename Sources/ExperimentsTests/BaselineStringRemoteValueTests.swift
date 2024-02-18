@@ -2,9 +2,9 @@ import XCTest
 
 @testable import Experiments
 
-class BaselineRemoteValueTests: XCTestCase {
+class BaselineStringRemoteValueTests: XCTestCase {
 
-    @BaselineRemoteValue
+    @BaselineStringRemoteValue
     struct RemoteValue {
 
         enum Variant: String {

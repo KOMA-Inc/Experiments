@@ -4,8 +4,8 @@ import XCTest
 
 class ExperimentalGroupTrackableTests: XCTestCase {
 
-    @BaselineRemoteValue
-    struct RemoteValue: ExperimentalGroupTrackable {
+    @BaselineStringRemoteValue
+    struct RemoteStringValue: ExperimentalGroupTrackable {
 
         enum Variant: String {
             case a, b, c
@@ -16,13 +16,25 @@ class ExperimentalGroupTrackableTests: XCTestCase {
         var experimentalGroupValue: String { "" }
     }
 
+    @BaselineBoolRemoteValue
+    struct RemoteBoolValue: ExperimentalGroupTrackable {
+
+        var experimentalGroupKey: String { "" }
+
+        var experimentalGroupValue: String { "" }
+    }
+
     func testRemoteValueIsBaseline() {
-        let remoteValue = RemoteValue(name: "a_baseline")!
-        XCTAssertFalse(remoteValue.shouldTrack)
+        let remoteStringValue = RemoteStringValue(name: "a_baseline")!
+        let remoteBoolValue = RemoteBoolValue(name: "true_baseline")!
+        XCTAssertFalse(remoteStringValue.shouldTrack)
+        XCTAssertFalse(remoteBoolValue.shouldTrack)
     }
 
     func testRemoteValueIsNotBaseline() {
-        let remoteValue = RemoteValue(name: "a")!
-        XCTAssertTrue(remoteValue.shouldTrack)
+        let remoteStringValue = RemoteStringValue(name: "a")!
+        let remoteBoolValue = RemoteBoolValue(name: "true")!
+        XCTAssertTrue(remoteStringValue.shouldTrack)
+        XCTAssertTrue(remoteBoolValue.shouldTrack)
     }
 }

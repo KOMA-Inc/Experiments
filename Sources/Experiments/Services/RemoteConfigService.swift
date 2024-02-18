@@ -139,7 +139,7 @@ public extension RemoteConfigService {
             }
 
             return if let value = value as? BoolRemoteValue {
-                (key: keyTitle, value: value.rawValue == 0 ? "disabled" : "enabled")
+                (key: keyTitle, value: value.isEnabled ? "enabled" : "disabled")
             } else if let value = value as? StringRemoteValue {
                 (key: keyTitle, value: value.name)
             } else {

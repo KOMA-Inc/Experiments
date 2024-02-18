@@ -3,17 +3,20 @@ import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxBuilder
 
-public struct BaselineRemoteValueMacro {
+public struct BaselineBoolRemoteValueMacro {
     enum DiagnosticError: String, DiagnosticMessage {
 
         var severity: DiagnosticSeverity { .error }
 
         case incorrectType
+        case variantEnum
 
         var message: String {
             switch self {
             case .incorrectType:
-                "@BaselineRemoteValue should be applied to struct"
+                "@BaselineBoolRemoteValue should be applied to struct"
+            case .variantEnum:
+                "@BaselineBoolRemoteValue should be applied to empty struct"
             }
         }
 
@@ -25,7 +28,7 @@ public struct BaselineRemoteValueMacro {
 
 // MARK: - MemberMacro
 
-extension BaselineRemoteValueMacro: MemberMacro {
+extension BaselineBoolRemoteValueMacro: MemberMacro {
 
     public static func expansion(
         of node: AttributeSyntax,
@@ -41,21 +44,44 @@ extension BaselineRemoteValueMacro: MemberMacro {
             context.diagnose(diagnostic)
             return []
         }
+
+        // Should NOT contain Variant enum
+
+        let members = declaration.memberBlock.members
+        guard (members.first(where: { $0.decl.as(EnumDeclSyntax.self) != nil })?.decl.as(EnumDeclSyntax.self)) == nil else {
+            let diagnostic = Diagnostic(node: node, message: DiagnosticError.variantEnum)
+            context.diagnose(diagnostic)
+            return []
+        }
+
+        return try expansionForBaselineStringRemoteValue()
+    }
+
+    private static func expansionForBaselineStringRemoteValue() throws -> [DeclSyntax] {
         let baseline = try VariableDeclSyntax("let baseline: Bool")
-        let variant = try VariableDeclSyntax("let variant: Variant")
+        let variant = try VariableDeclSyntax("let isEnabled: Bool")
         let optionalInitializer = try InitializerDeclSyntax("init?(name: String)") {
             try VariableDeclSyntax(#"let baseline = name.hasSuffix("_baseline")"#)
             try VariableDeclSyntax(#"let name = baseline ? String(name.dropLast("_baseline".count)) : name"#)
             """
-            guard let variant = Variant(name: name) else { return nil }
+            let isEnabled: Bool? = if name == "true" {
+                true
+            } else if name == "false" {
+                false
+            } else {
+                nil
+            }
+            """
+            """
+            guard let isEnabled else { return nil }
             """
             CodeBlockItemSyntax(stringLiteral: "self.baseline = baseline")
-            CodeBlockItemSyntax(stringLiteral: "self.variant = variant")
+            CodeBlockItemSyntax(stringLiteral: "self.isEnabled = isEnabled")
         }
 
-        let initializer = try InitializerDeclSyntax("init(baseline: Bool, variant: Variant)") {
+        let initializer = try InitializerDeclSyntax("init(baseline: Bool, isEnabled: Bool)") {
             CodeBlockItemSyntax(stringLiteral: "self.baseline = baseline")
-            CodeBlockItemSyntax(stringLiteral: "self.variant = variant")
+            CodeBlockItemSyntax(stringLiteral: "self.isEnabled = isEnabled")
         }
 
         return [
@@ -69,7 +95,7 @@ extension BaselineRemoteValueMacro: MemberMacro {
 
 // MARK: - ExtensionMacro
 
-extension BaselineRemoteValueMacro: ExtensionMacro {
+extension BaselineBoolRemoteValueMacro: ExtensionMacro {
 
     public static func expansion(
         of node: AttributeSyntax,
@@ -88,62 +114,57 @@ extension BaselineRemoteValueMacro: ExtensionMacro {
             return []
         }
 
+        // Should NOT contain Variant enum
+
         let members = declaration.memberBlock.members
-        guard let enumBlock = members.first(where: { $0.decl.as(EnumDeclSyntax.self) != nil })?.decl.as(EnumDeclSyntax.self) else {
+        guard (members.first(where: { $0.decl.as(EnumDeclSyntax.self) != nil })?.decl.as(EnumDeclSyntax.self)) == nil else {
+            let diagnostic = Diagnostic(node: node, message: DiagnosticError.variantEnum)
+            context.diagnose(diagnostic)
             return []
         }
-        let enumMembers = enumBlock.memberBlock.members
-        let caseDecls = enumMembers.compactMap { $0.decl.as(EnumCaseDeclSyntax.self) }
-        let elements = caseDecls.flatMap { $0.elements }
-        let allCases = elements.flatMap { element in
-            [
-                "\(type.trimmed)(baseline: true, variant: .\(element.name.text))",
-                "\(type.trimmed)(baseline: false, variant: .\(element.name.text))"
-            ]
-        }
 
+        let defaultDeclaration = defaultDeclaration(of: node, providingMembersOf: declaration, in: context)
+        let isEnabledByDefault = defaultDeclaration ? "true" : "false"
 
         let ext = try ExtensionDeclSyntax("extension \(type.trimmed): CaseIterable, StringRemoteValue, BaselineStringRemoteValue") {
             """
             static var allCases: [\(type.trimmed)] {
                 [
-                    \(raw: allCases.joined(separator: ",\n"))
+                    \(type.trimmed)(baseline: true, isEnabled: false),
+                    \(type.trimmed)(baseline: false, isEnabled: false),
+                    \(type.trimmed)(baseline: true, isEnabled: true),
+                    \(type.trimmed)(baseline: false, isEnabled: true),
                 ]
             }
 
             var name: String {
-                baseline ? variant.name + "_baseline" : variant.name
+                let status = isEnabled ? "Enabled" : "Disabled"
+                return baseline ? status + "_baseline" : status
             }
 
             static var `default`: Self {
-                \(type.trimmed)(baseline: true, variant: .default)
+                \(type.trimmed)(baseline: true, isEnabled: \(raw: isEnabledByDefault))
             }
             """
         }
 
         return [ext]
     }
-}
 
-// MARK: - MemberAttributeMacro
-
-extension BaselineRemoteValueMacro: MemberAttributeMacro {
-    public static func expansion(
+    private static func defaultDeclaration(
         of node: AttributeSyntax,
-        attachedTo declaration: some DeclGroupSyntax,
-        providingAttributesFor member: some DeclSyntaxProtocol,
+        providingMembersOf declaration: StructDeclSyntax,
         in context: some MacroExpansionContext
-    ) throws -> [AttributeSyntax] {
-        if let member = member.as(EnumDeclSyntax.self) {
-            if member.attributes.contains(where: {
-                $0.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "RemoteValue"
-            }) {
-                []
+    ) -> Bool {
+
+        let isEnabledByDefault: Bool? = if case let .argumentList(arguments) = node.arguments,
+            let expression = arguments.first?.expression.as(BooleanLiteralExprSyntax.self) {
+                expression.literal.text == "true" ? true : false
             } else {
-                ["@RemoteValue"]
+                nil
             }
-        } else {
-            []
-        }
+
+        return isEnabledByDefault ?? false
+
     }
 }

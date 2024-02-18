@@ -7,16 +7,16 @@ import XCTest
 #if canImport(ExperimentsMacros)
 import ExperimentsMacros
 
-private let testMacros: [String: Macro.Type] = ["BaselineRemoteValue": BaselineRemoteValueMacro.self]
+private let testMacros: [String: Macro.Type] = ["BaselineStringRemoteValue": BaselineStringRemoteValueMacro.self]
 #endif
 
-final class BaselineRemoteValueMacroTests: XCTestCase {
+final class BaselineStringRemoteValueMacroTests: XCTestCase {
 
     func testExpansionOnStruct() throws {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
-        @BaselineRemoteValue
+        @BaselineStringRemoteValue
         struct RemoteValue {
 
             enum Variant: String {
@@ -30,7 +30,7 @@ final class BaselineRemoteValueMacroTests: XCTestCase {
         expandedSource:
         """
         struct RemoteValue {
-            @RemoteValue
+            @StringRemoteValue
 
             enum Variant: String {
                 case a, b
@@ -58,22 +58,14 @@ final class BaselineRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: CaseIterable, StringRemoteValue, BaselineStringRemoteValue {
+        extension RemoteValue: CaseIterable, BaselineStringRemoteValue {
             static var allCases: [RemoteValue] {
-                [
-                    RemoteValue(baseline: true, variant: .a),
-                    RemoteValue(baseline: false, variant: .a),
-                    RemoteValue(baseline: true, variant: .b),
-                    RemoteValue(baseline: false, variant: .b),
-                    RemoteValue(baseline: true, variant: .c),
-                    RemoteValue(baseline: false, variant: .c),
-                    RemoteValue(baseline: true, variant: .d),
-                    RemoteValue(baseline: false, variant: .d),
-                    RemoteValue(baseline: true, variant: .e),
-                    RemoteValue(baseline: false, variant: .e),
-                    RemoteValue(baseline: true, variant: .f),
-                    RemoteValue(baseline: false, variant: .f)
-                ]
+                Variant.allCases.flatMap {
+                    [
+                        RemoteValue(baseline: true, variant: $0),
+                        RemoteValue(baseline: false, variant: $0)
+                    ]
+                }
             }
 
             var name: String {
@@ -96,10 +88,10 @@ final class BaselineRemoteValueMacroTests: XCTestCase {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
-        @BaselineRemoteValue
+        @BaselineStringRemoteValue
         struct RemoteValue {
 
-            @RemoteValue
+            @StringRemoteValue
             enum Variant: String {
                 case a, b
                 case c = "c_test", d, e = "sd"
@@ -112,7 +104,7 @@ final class BaselineRemoteValueMacroTests: XCTestCase {
         """
         struct RemoteValue {
 
-            @RemoteValue
+            @StringRemoteValue
             enum Variant: String {
                 case a, b
                 case c = "c_test", d, e = "sd"
@@ -139,22 +131,14 @@ final class BaselineRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: CaseIterable, StringRemoteValue, BaselineStringRemoteValue {
+        extension RemoteValue: CaseIterable, BaselineStringRemoteValue {
             static var allCases: [RemoteValue] {
-                [
-                    RemoteValue(baseline: true, variant: .a),
-                    RemoteValue(baseline: false, variant: .a),
-                    RemoteValue(baseline: true, variant: .b),
-                    RemoteValue(baseline: false, variant: .b),
-                    RemoteValue(baseline: true, variant: .c),
-                    RemoteValue(baseline: false, variant: .c),
-                    RemoteValue(baseline: true, variant: .d),
-                    RemoteValue(baseline: false, variant: .d),
-                    RemoteValue(baseline: true, variant: .e),
-                    RemoteValue(baseline: false, variant: .e),
-                    RemoteValue(baseline: true, variant: .f),
-                    RemoteValue(baseline: false, variant: .f)
-                ]
+                Variant.allCases.flatMap {
+                    [
+                        RemoteValue(baseline: true, variant: $0),
+                        RemoteValue(baseline: false, variant: $0)
+                    ]
+                }
             }
 
             var name: String {
@@ -177,7 +161,7 @@ final class BaselineRemoteValueMacroTests: XCTestCase {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
-        @BaselineRemoteValue
+        @BaselineStringRemoteValue
         enum Value {
         }
         """,
@@ -188,8 +172,33 @@ final class BaselineRemoteValueMacroTests: XCTestCase {
         }
         """,
         diagnostics: [
-            DiagnosticSpec(message: "@BaselineRemoteValue should be applied to struct", line: 1, column: 1),
-            DiagnosticSpec(message: "@BaselineRemoteValue should be applied to struct", line: 1, column: 1)
+            DiagnosticSpec(message: "@BaselineStringRemoteValue should be applied to struct", line: 1, column: 1),
+            DiagnosticSpec(message: "@BaselineStringRemoteValue should be applied to struct", line: 1, column: 1)
+        ],
+        macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+
+    func testErrorOnIncorrectStruct() throws {
+        #if canImport(ExperimentsMacros)
+        assertMacroExpansion(
+        """
+        @BaselineStringRemoteValue
+        struct RemoteValue {
+        }
+        """,
+        expandedSource:
+        """
+
+        struct RemoteValue {
+        }
+        """,
+        diagnostics: [
+            DiagnosticSpec(message: "No Variant enum was found in @BaselineStringRemoteValue struct", line: 1, column: 1),
+            DiagnosticSpec(message: "No Variant enum was found in @BaselineStringRemoteValue struct", line: 1, column: 1)
         ],
         macros: testMacros
         )

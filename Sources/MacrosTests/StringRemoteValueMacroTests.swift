@@ -7,17 +7,17 @@ import XCTest
 #if canImport(ExperimentsMacros)
 import ExperimentsMacros
 
-private let testMacros: [String: Macro.Type] = ["RemoteValue": RemoteValueMacro.self]
+private let testMacros: [String: Macro.Type] = ["StringRemoteValue": StringRemoteValueMacro.self]
 #endif
 
 
-final class RemoteValueMacroTests: XCTestCase {
+final class StringRemoteValueMacroTests: XCTestCase {
 
     func testExpansionOnStringRawRepresentableEnum() throws {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
-        @RemoteValue
+        @StringRemoteValue
         enum RemoteValue: String {
             case a, b
             case c = "c_test", d, e = "sd"
@@ -33,7 +33,7 @@ final class RemoteValueMacroTests: XCTestCase {
             case f
         }
 
-        extension RemoteValue: CaseIterable, StringRemoteValue, Equatable {
+        extension RemoteValue: CaseIterable, Equatable, StringRemoteValue {
         }
         """,
         macros: testMacros
@@ -43,11 +43,11 @@ final class RemoteValueMacroTests: XCTestCase {
         #endif
     }
 
-    func testExpansionOnStringRawRepresentableEnumWithConforms() throws {
+    func testExpansionOnStringRawRepresentableEnumWithSeveralConforms() throws {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
-        @RemoteValue
+        @StringRemoteValue
         enum RemoteValue: String, CaseIterable, StringRemoteValue {
             case a, b
             case c = "c_test", d, e = "sd"
@@ -61,6 +61,69 @@ final class RemoteValueMacroTests: XCTestCase {
             case a, b
             case c = "c_test", d, e = "sd"
             case f
+        }
+
+        extension RemoteValue: Equatable {
+        }
+        """,
+        macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+
+    func testExpansionOnStringRawRepresentableEnumWithCaseIterableConform() throws {
+        #if canImport(ExperimentsMacros)
+        assertMacroExpansion(
+        """
+        @StringRemoteValue
+        enum RemoteValue: String, CaseIterable {
+            case a, b
+            case c = "c_test", d, e = "sd"
+            case f
+        }
+        """,
+        expandedSource:
+        """
+
+        enum RemoteValue: String, CaseIterable {
+            case a, b
+            case c = "c_test", d, e = "sd"
+            case f
+        }
+
+        extension RemoteValue: Equatable, StringRemoteValue {
+        }
+        """,
+        macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+
+    func testExpansionOnStringRawRepresentableEnumWithStringRemoteValueConform() throws {
+        #if canImport(ExperimentsMacros)
+        assertMacroExpansion(
+        """
+        @StringRemoteValue
+        enum RemoteValue: String, StringRemoteValue {
+            case a, b
+            case c = "c_test", d, e = "sd"
+            case f
+        }
+        """,
+        expandedSource:
+        """
+
+        enum RemoteValue: String, StringRemoteValue {
+            case a, b
+            case c = "c_test", d, e = "sd"
+            case f
+        }
+
+        extension RemoteValue: CaseIterable, Equatable {
         }
         """,
         macros: testMacros
@@ -74,7 +137,7 @@ final class RemoteValueMacroTests: XCTestCase {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
-        @RemoteValue
+        @StringRemoteValue
         enum RemoteValue {
         }
         """,
@@ -82,24 +145,11 @@ final class RemoteValueMacroTests: XCTestCase {
         """
 
         enum RemoteValue {
-
-            case enabled
-
-            case disabled
-
-            var rawValue: Int {
-                switch self {
-                case .enabled:
-                    1
-                case .disabled:
-                    0
-                }
-            }
-        }
-
-        extension RemoteValue: CaseIterable, BoolRemoteValue, Equatable {
         }
         """,
+        diagnostics: [
+            DiagnosticSpec(message: "@StringRemoteValue needs enum that conforms to String", line: 1, column: 1)
+        ],
         macros: testMacros
         )
         #else
@@ -111,7 +161,7 @@ final class RemoteValueMacroTests: XCTestCase {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
-        @RemoteValue
+        @StringRemoteValue
         class RemoteValue {
 
         }
@@ -125,36 +175,7 @@ final class RemoteValueMacroTests: XCTestCase {
         }
         """,
         diagnostics: [
-            DiagnosticSpec(message: "@RemoteValue should be applied to enum", line: 1, column: 1),
-            DiagnosticSpec(message: "@RemoteValue should be applied to enum", line: 1, column: 1)
-        ],
-        macros: testMacros
-        )
-        #else
-        throw XCTSkip("macros are only supported when running tests for the host platform")
-        #endif
-    }
-
-    func testErrorOnUnsupportedEnum() throws {
-        #if canImport(ExperimentsMacros)
-        assertMacroExpansion(
-        """
-        @RemoteValue
-        enum RemoteValue: Int {
-
-        }
-
-        """,
-        expandedSource:
-        """
-
-        enum RemoteValue: Int {
-
-        }
-        """,
-        diagnostics: [
-            DiagnosticSpec(message: "@RemoteValue needs enum that conforms to String or nothing", line: 1, column: 1),
-            DiagnosticSpec(message: "@RemoteValue needs enum that conforms to String or nothing", line: 1, column: 1)
+            DiagnosticSpec(message: "@StringRemoteValue should be applied to enum", line: 1, column: 1)
         ],
         macros: testMacros
         )
