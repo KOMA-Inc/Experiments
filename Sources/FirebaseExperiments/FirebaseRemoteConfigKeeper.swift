@@ -31,12 +31,10 @@ public class FirebaseRemoteConfigKeeper: RemoteConfigKeeper {
     }
 
     public func value<T: Experiments.RemoteValue>(for key: Experiments.RemoteKey) -> T? {
-        if let type = key.valueType as? StringRemoteValue.Type {
+        if let type = key.valueType as? StringInitializableRemoteValue.Type {
             return string(for: key).flatMap { type.init(name: $0) } as? T
-        } else if let type = key.valueType as? BoolRemoteValue.Type {
+        } else if let type = key.valueType as? BoolInitializableRemoteValue.Type {
             return bool(for: key).flatMap { type.init(booleanLiteral: $0) } as? T
-        } else if let type = key.valueType as? BaselineBoolRemoteValue.Type {
-            return string(for: key).flatMap { type.init(rawValue: $0) } as? T
         }
         return nil
     }

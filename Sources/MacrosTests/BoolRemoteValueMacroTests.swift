@@ -34,7 +34,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
                 self = value ? .enabled : .disabled
             }
 
-            var rawValue: Bool {
+            var isEnabled: Bool {
                 switch self {
                 case .enabled:
                     true
@@ -78,7 +78,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
                 self = value ? .enabled : .disabled
             }
 
-            var rawValue: Bool {
+            var isEnabled: Bool {
                 switch self {
                 case .enabled:
                     true
@@ -119,7 +119,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
                 self = value ? .enabled : .disabled
             }
 
-            var rawValue: Bool {
+            var isEnabled: Bool {
                 switch self {
                 case .enabled:
                     true
@@ -163,7 +163,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
                 self = value ? .enabled : .disabled
             }
 
-            var rawValue: Bool {
+            var isEnabled: Bool {
                 switch self {
                 case .enabled:
                     true
@@ -207,7 +207,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
                 self = value ? .enabled : .disabled
             }
 
-            var rawValue: Bool {
+            var isEnabled: Bool {
                 switch self {
                 case .enabled:
                     true
@@ -249,7 +249,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
                 self = value ? .enabled : .disabled
             }
 
-            var rawValue: Bool {
+            var isEnabled: Bool {
                 switch self {
                 case .enabled:
                     true
@@ -291,7 +291,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
                 self = value ? .enabled : .disabled
             }
 
-            var rawValue: Bool {
+            var isEnabled: Bool {
                 switch self {
                 case .enabled:
                     true

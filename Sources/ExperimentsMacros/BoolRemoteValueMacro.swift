@@ -67,9 +67,9 @@ extension BoolRemoteValueMacro: MemberMacro {
         let initializer = try InitializerDeclSyntax("init(booleanLiteral value: Bool)") {
             "self = value ? .enabled : .disabled"
         }
-        let rawValue: SyntaxNodeString =
+        let isEnabled: SyntaxNodeString =
                 """
-                var rawValue: Bool {
+                var isEnabled: Bool {
                     switch self {
                     case .enabled:
                         true
@@ -83,7 +83,7 @@ extension BoolRemoteValueMacro: MemberMacro {
             DeclSyntax(enabled),
             DeclSyntax(disabled),
             DeclSyntax(initializer),
-            DeclSyntax(try VariableDeclSyntax(rawValue))
+            DeclSyntax(try VariableDeclSyntax(isEnabled))
         ]
     }
 }

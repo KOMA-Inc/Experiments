@@ -6,7 +6,8 @@ struct Plugins: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         StringRemoteValueMacro.self,
         BoolRemoteValueMacro.self,
-        BaselineRemoteValueMacro.self,
+        BaselineStringRemoteValueMacro.self,
+        BaselineBoolRemoteValueMacro.self,
         RemoteValuesNamespaceMacro.self
     ]
 }

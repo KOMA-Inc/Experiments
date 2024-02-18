@@ -10,7 +10,7 @@ public macro StringRemoteValue() = #externalMacro(module: "ExperimentsMacros", t
 
 @attached(
     member,
-    names: named(enabled), named(disabled), named(rawValue), named(init(booleanLiteral:))
+    names: named(enabled), named(disabled), named(isEnabled), named(init(booleanLiteral:))
 )
 @attached(
     extension,
@@ -19,32 +19,33 @@ public macro StringRemoteValue() = #externalMacro(module: "ExperimentsMacros", t
 )
 public macro BoolRemoteValue(enabledByDefault: Bool = false) = #externalMacro(module: "ExperimentsMacros", type: "BoolRemoteValueMacro")
 
+// MARK: - BaselineStringRemoteValue
 
+@attached(memberAttribute)
+@attached(
+    member,
+    names: named(baseline), named(variant), named(init(name:)), named(init(baseline:variant:))
+)
+@attached(
+    extension,
+    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue,
+    names: named(`default`), named(allCases), named(name)
+)
+public macro BaselineStringRemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "BaselineStringRemoteValueMacro")
 
+// MARK: - BaselineBoolRemoteValue
 
+@attached(
+    member,
+    names: named(baseline), named(isEnabled), named(init(name:)), named(init(baseline:isEnabled:))
+)
+@attached(
+    extension,
+    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue,
+    names: named(`default`), named(allCases), named(name)
+)
+public macro BaselineBoolRemoteValue(enabledByDefault: Bool = false) = #externalMacro(module: "ExperimentsMacros", type: "BaselineBoolRemoteValueMacro")
 
-
-
-
-
-
-
-
-
-
-
-//
-//@attached(memberAttribute)
-//@attached(
-//    member,
-//    names: named(baseline), named(variant), named(init(name:)), named(init(baseline:variant:))
-//)
-//@attached(
-//    extension,
-//    conformances: CaseIterable, BaselineStringRemoteValue, StringRemoteValue,
-//    names: named(`default`), named(allCases), named(name)
-//)
-//public macro BaselineRemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "BaselineRemoteValueMacro")
 
 // MARK: - RemoteValuesNamespace
 
