@@ -1,8 +1,8 @@
 # Introduction 
 
-Experiments is a framework that helps to setup A/B testing infrustructure. It provides methods for defining your remote keys and values as well as services to work with.  
+Experiments is a framework designed to facilitate the setup of A/B testing infrastructure. It offers methods for defining remote keys and values, along with services to interact with them. 
 
-Currenly, only one concrete service is available - the one to be used for Firebase Remote Configs, however, you can define you own by conforming it to needed protocols.
+Currently, the framework supports a Firebase Remote Configs service, but you can define your own by conforming to the necessary protocols.
 
 # Defining values and keys
 
