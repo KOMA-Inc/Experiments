@@ -33,7 +33,7 @@ final class StringRemoteValueMacroTests: XCTestCase {
             case f
         }
 
-        extension RemoteValue: CaseIterable, StringRemoteValue {
+        extension RemoteValue: CaseIterable, Equatable, StringRemoteValue {
         }
         """,
         macros: testMacros
@@ -43,7 +43,7 @@ final class StringRemoteValueMacroTests: XCTestCase {
         #endif
     }
 
-    func testExpansionOnStringRawRepresentableEnumWithBothConforms() throws {
+    func testExpansionOnStringRawRepresentableEnumWithSeveralConforms() throws {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
@@ -61,6 +61,9 @@ final class StringRemoteValueMacroTests: XCTestCase {
             case a, b
             case c = "c_test", d, e = "sd"
             case f
+        }
+
+        extension RemoteValue: Equatable {
         }
         """,
         macros: testMacros
@@ -90,7 +93,7 @@ final class StringRemoteValueMacroTests: XCTestCase {
             case f
         }
 
-        extension RemoteValue: StringRemoteValue {
+        extension RemoteValue: Equatable, StringRemoteValue {
         }
         """,
         macros: testMacros
@@ -120,7 +123,7 @@ final class StringRemoteValueMacroTests: XCTestCase {
             case f
         }
 
-        extension RemoteValue: CaseIterable {
+        extension RemoteValue: CaseIterable, Equatable {
         }
         """,
         macros: testMacros

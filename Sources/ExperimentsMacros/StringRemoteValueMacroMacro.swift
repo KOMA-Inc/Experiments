@@ -61,7 +61,7 @@ extension StringRemoteValueMacro: ExtensionMacro {
             $0.type.as(IdentifierTypeSyntax.self)?.name.text
         }
 
-        let missingExtensions = Set(["CaseIterable", "StringRemoteValue"]).subtracting(inheritedTypes)
+        let missingExtensions = Set(["CaseIterable", "StringRemoteValue", "Equatable"]).subtracting(inheritedTypes)
 
         if missingExtensions.isEmpty {
             return []

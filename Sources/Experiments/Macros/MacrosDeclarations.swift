@@ -2,7 +2,7 @@
 
 @attached(
     extension,
-    conformances: CaseIterable, StringRemoteValue
+    conformances: CaseIterable, StringRemoteValue, Equatable
 )
 public macro StringRemoteValue() = #externalMacro(module: "ExperimentsMacros", type: "StringRemoteValueMacro")
 
@@ -14,7 +14,7 @@ public macro StringRemoteValue() = #externalMacro(module: "ExperimentsMacros", t
 )
 @attached(
     extension,
-    conformances: CaseIterable, BoolRemoteValue,
+    conformances: CaseIterable, BoolRemoteValue, Equatable,
     names: named(`default`)
 )
 public macro BoolRemoteValue(enabledByDefault: Bool = false) = #externalMacro(module: "ExperimentsMacros", type: "BoolRemoteValueMacro")

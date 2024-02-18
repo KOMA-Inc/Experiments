@@ -122,7 +122,7 @@ extension BoolRemoteValueMacro: ExtensionMacro {
             $0.type.as(IdentifierTypeSyntax.self)?.name.text
         } ?? []
 
-        let missingExtensions = Set(["CaseIterable", "BoolRemoteValue"]).subtracting(inheritedTypes)
+        let missingExtensions = Set(["CaseIterable", "BoolRemoteValue", "Equatable"]).subtracting(inheritedTypes)
 
         let member: MemberBlockItemListSyntax? = try defaultDeclaration(
             of: node,

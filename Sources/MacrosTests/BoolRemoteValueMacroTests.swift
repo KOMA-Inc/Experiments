@@ -44,7 +44,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: BoolRemoteValue, CaseIterable {
+        extension RemoteValue: BoolRemoteValue, CaseIterable, Equatable {
             static let `default`: Self = .disabled
         }
         """,
@@ -88,7 +88,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: BoolRemoteValue, CaseIterable {
+        extension RemoteValue: BoolRemoteValue, CaseIterable, Equatable {
         }
         """,
         macros: testMacros
@@ -129,7 +129,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: BoolRemoteValue, CaseIterable {
+        extension RemoteValue: BoolRemoteValue, CaseIterable, Equatable {
             static let `default`: Self = .enabled
         }
         """,
@@ -173,7 +173,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: BoolRemoteValue, CaseIterable {
+        extension RemoteValue: BoolRemoteValue, CaseIterable, Equatable {
         }
         """,
         diagnostics: [
@@ -217,7 +217,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: CaseIterable {
+        extension RemoteValue: CaseIterable, Equatable {
             static let `default`: Self = .disabled
         }
         """,
@@ -259,7 +259,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue: BoolRemoteValue {
+        extension RemoteValue: BoolRemoteValue, Equatable {
             static let `default`: Self = .disabled
         }
         """,
@@ -270,7 +270,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
         #endif
     }
 
-    func testExpansionOnEmptyBoolEnumWithBothConforms() throws {
+    func testExpansionOnEmptyBoolEnumWithSeveralConforms() throws {
         #if canImport(ExperimentsMacros)
         assertMacroExpansion(
         """
@@ -301,7 +301,7 @@ final class BoolRemoteValueMacroTests: XCTestCase {
             }
         }
 
-        extension RemoteValue {
+        extension RemoteValue: Equatable {
             static let `default`: Self = .disabled
         }
         """,
