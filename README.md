@@ -482,7 +482,7 @@ enum Remote {
         @BoolRemoteValue
         enum CFeatureEnabled { }
 
-        @StringRemoteValues
+        @StringRemoteValue
         enum OnboardingType: String {
             case x, y, z
         }
