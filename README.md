@@ -463,7 +463,6 @@ will expand to:
 ```swift
 enum Remote {
 
-    @RemoteValuesNamespace
     enum Value {
 
         @BaselineStringRemoteValue
