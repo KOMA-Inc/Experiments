@@ -128,6 +128,24 @@ open class RemoteConfigService {
 
 public extension RemoteConfigService {
 
+    final func updateRemoteValue<T: RemoteValue>(
+        for key: RemoteKey,
+        type: T.Type
+    ) {
+        let type = key.valueType
+        let storageKey = StorageKey(identifier: type)
+
+        guard let publisher = storage[storageKey] else { return }
+
+        var remoteValue: T? = debugValue(for: key)
+        if remoteValue == nil {
+            remoteValue = remoteConfigKeeper.value(for: key)
+        }
+
+        let value = remoteValue ?? .default
+        publisher.value = value
+    }
+
     final var currentRemoteData: [(key: String, value: String)] {
         allKeys.compactMap { key in
             let value = getRemoteValue(for: key, with: key.valueType)
