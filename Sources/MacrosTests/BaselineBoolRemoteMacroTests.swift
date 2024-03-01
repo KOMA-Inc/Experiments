@@ -64,7 +64,7 @@ final class BaselineBoolRemoteValueMacroTests: XCTestCase {
             }
 
             var name: String {
-                let status = isEnabled ? "Enabled" : "Disabled"
+                let status = isEnabled ? "true" : "false"
                 return baseline ? status + "_baseline" : status
             }
 
@@ -132,7 +132,7 @@ final class BaselineBoolRemoteValueMacroTests: XCTestCase {
             }
 
             var name: String {
-                let status = isEnabled ? "Enabled" : "Disabled"
+                let status = isEnabled ? "true" : "false"
                 return baseline ? status + "_baseline" : status
             }
 
