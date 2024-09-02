@@ -510,4 +510,5 @@ Algorithm is the following:
 - `trackIncorrectValue` - is called when performing `getValues(for:)` for valid key but corrupted value
 - `trackIncorrectValues` - is called after performing `getValues(for:)` for valid key but corrupted value
 - `trackExperimentalGroup` - is called when performing `getValues(for:)` for valid remote value, if it conforms to `ExperimentalGroupTrackable`
-- `debugValue(for:)` - if your app uses some kind of debug mechanism and this method does not return `nil`, the returned value will be used insead of real from Firebase.
+- `debugValue(for:)` - if your app uses some kind of debug mechanism and this method does not return `nil`, the returned value will be used instead of real from Firebase.
+- `customValue(for:)` - if you app needs some custom value logic, you can override this method for some particular key and return `nil` in other cases. This method overrides logic of `debugValue(for:)` method and real value

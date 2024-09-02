@@ -46,6 +46,12 @@ open class RemoteConfigService {
             remoteValue = remoteConfigKeeper.value(for: key)
         }
 
+        // Try to apply custom logic for the given value
+        let custom: T? = customValue(for: key)
+        if let custom {
+            remoteValue = custom
+        }
+
         // If it is still absent, either value is incorrect or key itself is missing
         if remoteValue == nil {
             // key has value, meaning that this value is incorrect
@@ -87,6 +93,10 @@ open class RemoteConfigService {
     }
 
     open func debugValue<T: RemoteValue>(for key: RemoteKey) -> T? {
+        nil
+    }
+
+    open func customValue<T: RemoteValue>(for key: RemoteKey) -> T? {
         nil
     }
 
@@ -140,6 +150,11 @@ public extension RemoteConfigService {
         var remoteValue: T? = debugValue(for: key)
         if remoteValue == nil {
             remoteValue = remoteConfigKeeper.value(for: key)
+        }
+
+        let custom: T? = customValue(for: key)
+        if let custom {
+            remoteValue = custom
         }
 
         let value = remoteValue ?? .default
