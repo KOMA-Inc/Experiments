@@ -51,9 +51,8 @@ public class FirebaseRemoteConfigKeeper: RemoteConfigKeeper {
     }
 
     private func bool(for key: Experiments.RemoteKey) -> Bool? {
-        guard
-            let stringValue = config[key.name].stringValue,
-            !stringValue.isEmpty else {
+        let stringValue = config[key.name].stringValue
+        guard !stringValue.isEmpty else {
             return nil
         }
 
