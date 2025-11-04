@@ -23,7 +23,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/firebase/firebase-ios-sdk",
-            from: "11.3.0"
+            from: "12.0.0"
         ),
         // Depend on the Swift 5.9 release of SwiftSyntax
         .package(
