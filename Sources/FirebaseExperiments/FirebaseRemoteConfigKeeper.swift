@@ -35,6 +35,8 @@ public class FirebaseRemoteConfigKeeper: RemoteConfigKeeper {
             return string(for: key).flatMap { type.init(name: $0) } as? T
         } else if let type = key.valueType as? BoolInitializableRemoteValue.Type {
             return bool(for: key).flatMap { type.init(booleanLiteral: $0) } as? T
+        } else if let type = key.valueType as? JSONInitializableRemoteValue.Type {
+            return jsonData(for: key).flatMap { type.init(jsonData: $0) } as? T
         }
         return nil
     }
@@ -61,5 +63,10 @@ public class FirebaseRemoteConfigKeeper: RemoteConfigKeeper {
 
     private func string(for key: Experiments.RemoteKey) -> String? {
         config[key.name].stringValue
+    }
+
+    private func jsonData(for key: Experiments.RemoteKey) -> Data? {
+        let data = config[key.name].dataValue
+        return data.isEmpty ? nil : data
     }
 }
