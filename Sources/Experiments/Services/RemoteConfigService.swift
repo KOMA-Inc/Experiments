@@ -28,6 +28,10 @@ open class RemoteConfigService {
     @Atomic
     private var storage: [StorageKey: CurrentValueSubject<RemoteValue, Never>] = [:]
 
+    private var fetchResult: Result<Void, Error>?
+    private var fetchSubject: PassthroughSubject<Void, Error>?
+    private var cancellables: Set<AnyCancellable> = []
+
     @discardableResult
     private func getRemoteValue<T: RemoteValue>(for key: RemoteKey, with type: T.Type) -> T {
         // Create storage key for given value type
@@ -193,6 +197,31 @@ public extension RemoteConfigService {
     }
 
     final func fetch() -> AnyPublisher<Void, Error> {
+        if let fetchResult {
+            return fetchResult.publisher.eraseToAnyPublisher()
+        }
+        if let fetchSubject {
+            return fetchSubject.eraseToAnyPublisher()
+        }
+        let subject = PassthroughSubject<Void, Error>()
+        fetchSubject = subject
         remoteConfigKeeper.fetch()
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    switch completion {
+                    case .finished:
+                        self?.fetchResult = .success(())
+                        subject.send(())
+                        subject.send(completion: .finished)
+                    case .failure(let error):
+                        self?.fetchResult = .failure(error)
+                        subject.send(completion: .failure(error))
+                    }
+                    self?.fetchSubject = nil
+                },
+                receiveValue: { _ in }
+            )
+            .store(in: &cancellables)
+        return subject.eraseToAnyPublisher()
     }
 }
